@@ -30,7 +30,7 @@ const watchMap = new Map();
 // 	encoding: null
 // });
 
-/// 🚀 Instance file watcher socket daemon.
+/// 🚀 Instant file watcher socket daemon.
 const Main = ({ path: watchPath }) => {
 	const [restStatus, restStatusColor, setRestStatus] = useLogState(
 		"rest",

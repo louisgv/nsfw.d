@@ -9,15 +9,17 @@ $ npm install nsfw.d
 
 ## CLI
 
-```
-$ nsfw.d --help
-nsfw.d
+```bash
+$ nsfw.d <path>
 
-Hello world command
+🚀 Instance file watcher socket daemon.
+
+Positionals:
+  path  Relative path to the watching directory                         [string]
 
 Options:
-
-	--name  Name of the person to greet           [string]
+  --help     Show help                                                 [boolean]
+  --version  Show version number                                       [boolean]
 ```
 
 
