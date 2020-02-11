@@ -1,0 +1,28 @@
+{
+	"name": "nsfw.d",
+	"version": "0.0.0",
+	"license": "MIT",
+	"bin": "./build/cli.js",
+	"engines": {
+		"node": ">=8"
+	},
+	"scripts": {
+		"dev": "pastel dev",
+		"build": "pastel build",
+		"prepare": "pastel build"
+	},
+	"files": [
+		"build"
+	],
+	"dependencies": {
+		"fs-extra": "^8.1.0",
+		"ink": "^2.7.0",
+		"nsfw": "^1.2.7",
+		"pastel": "^1.0.3",
+		"prop-types": "^15.7.2",
+		"react": "^16.12.0",
+		"serve-handler": "^6.1.2",
+		"uWebSockets.js": "github:uNetworking/uWebSockets.js#v17.1.0",
+		"uuid": "^3.4.0"
+	}
+}
