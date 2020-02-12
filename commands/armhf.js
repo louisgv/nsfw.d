@@ -3,14 +3,16 @@ import PropTypes from "prop-types";
 
 import { Text, Color, Box } from "ink";
 
-import uWS from "uWebSockets.js";
-
 import watcher from "nsfw";
 import http from "http";
 import handler from "serve-handler";
+import url from "url";
 
 import fs from "fs-extra";
 import path from "path";
+
+import WebSocket from "ws";
+
 import { useLogState, getNetworkAddress } from "../core/utils";
 import { webSocketPort, staticPort } from "../core/config";
 
@@ -69,116 +71,91 @@ const Main = ({ path: watchPath }) => {
 
 		server.listen(staticPort, "0.0.0.0", () => {
 			setRestStatus(
-				`File ready at http://${networkAddress}:${staticPort} `,
+				`🚀\tFile ready at http://${networkAddress}:${staticPort} `,
 				"green"
 			);
 		});
 
 		// console.log(pty);
 
-		uWS
-			.App()
-			.ws("/watch", {
-				compresson: 0,
-				maxPayloadLength: 16 * 1024 * 1024,
+		const socketServer = new http.Server();
+		const wss1 = new WebSocket.Server({ noServer: true });
 
-				message: async (ws, message) => {
-					try {
-						const data = Buffer.from(message).toString();
-						// setSocketStatus(data);
+		wss1.on("connection", function connection(ws) {
+			ws.on("message", async function incoming(message) {
+				try {
+					const data = Buffer.from(message).toString();
+					// setSocketStatus(data);
 
-						const args = JSON.parse(data);
-						const { action, payload } = args;
+					const args = JSON.parse(data);
+					const { action, payload } = args;
 
-						switch (action) {
-							case "start": {
-								const watchId = uuid();
+					switch (action) {
+						case "start": {
+							const watchId = uuid();
 
-								const progressWatcher = await watcher(
-									absoluteWatchPath,
-									data => {
-										ws.send(
-											JSON.stringify({
-												watchId,
-												type: "watch-data",
-												data,
-												success: true
-											})
-										);
-									}
-								);
-
-								await progressWatcher.start();
-
-								watchMap.set(watchId, progressWatcher);
-								setWatcherStatus(
-									`👁️\tWatching ${absoluteWatchPath} with id: ${watchId} `
-								);
-								break;
-							}
-							case "stop": {
-								const { watchId: stopWatchId } = payload;
-								if (!watchMap.has(stopWatchId)) return;
-								// console.log(watchMap);
-
-								await watchMap.get(stopWatchId).stop();
-
-								watchMap.delete(stopWatchId);
-
+							const progressWatcher = await watcher(absoluteWatchPath, data => {
 								ws.send(
 									JSON.stringify({
-										success: true,
-										type: "watch-stop",
-										watchId: stopWatchId
+										watchId,
+										type: "watch-data",
+										data,
+										success: true
 									})
 								);
-								break;
-							}
-							default:
-								break;
+							});
+
+							await progressWatcher.start();
+
+							watchMap.set(watchId, progressWatcher);
+							setWatcherStatus(
+								`👁️\tWatching ${absoluteWatchPath} with id: ${watchId} `
+							);
+							break;
 						}
-					} catch (error) {
-						setWatcherStatus(`E\t${error.message}`, "red");
+						case "stop": {
+							const { watchId: stopWatchId } = payload;
+							if (!watchMap.has(stopWatchId)) return;
+							// console.log(watchMap);
+
+							await watchMap.get(stopWatchId).stop();
+
+							watchMap.delete(stopWatchId);
+
+							ws.send(
+								JSON.stringify({
+									success: true,
+									type: "watch-stop",
+									watchId: stopWatchId
+								})
+							);
+							break;
+						}
+						default:
+							break;
 					}
+				} catch (error) {
+					setWatcherStatus(`E\t${error.message}`, 'red')
 				}
-			})
-
-			// .ws("/terminal", {
-			// 	compression: 0,
-			// 	maxPayloadLength: 16 * 1024 * 1024,
-			// 	open: (ws, req) => {
-			// 		// For all shell data send it to the websocket
-			// 		// setSocketStatus(data);x
-			// 		shell.on("data", data => {
-			// 			try {
-			// 				ws.send(data);
-			// 			} catch (error) {
-			// 				setSocketStatus(error.message);
-			// 			}
-			// 		});
-			// 	},
-
-			// 	message: (ws, msg, isBinary) => {
-			// 		// setSocketStatus(msg);
-			// 		if (msg) {
-			// 			shell.write(Buffer.from(msg).toString());
-			// 		}
-			// 	}
-			// })
-			.listen("0.0.0.0", webSocketPort, token => {
-				if (!token) {
-					setSocketStatus(
-						"💀\tFailed to listen to port " + webSocketPort,
-						"red"
-					);
-					process.exit(1);
-				}
-
-				setSocketStatus(
-					`🚀\tSocket ready at http://${networkAddress}:${webSocketPort} `,
-					"green"
-				);
 			});
+		});
+
+		socketServer.on("upgrade", function upgrade(request, socket, head) {
+			const pathname = url.parse(request.url).pathname;
+
+			if (pathname === "/watch") {
+				wss1.handleUpgrade(request, socket, head, function done(ws) {
+					wss1.emit("connection", ws, request);
+				});
+			}
+		});
+
+		socketServer.listen(webSocketPort, "0.0.0.0", () => {
+			setSocketStatus(
+				`🚀\tSocket ready at http://${networkAddress}:${webSocketPort} `,
+				"green"
+			);
+		});
 
 		process.on("SIGINT", () => {
 			setRestStatus("⏹️\tShutdown app server", "cyan");
