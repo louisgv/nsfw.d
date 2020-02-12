@@ -32,7 +32,7 @@ const watchMap = new Map();
 // 	encoding: null
 // });
 
-/// 🚀 Instant file watcher socket daemon.
+/// 🚀 Instant file watcher socket daemon for armhf.
 const Main = ({ path: watchPath }) => {
 	const [restStatus, restStatusColor, setRestStatus] = useLogState(
 		"rest",
