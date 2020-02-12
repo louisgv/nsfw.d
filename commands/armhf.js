@@ -152,7 +152,7 @@ const Main = ({ path: watchPath }) => {
 
 		socketServer.listen(webSocketPort, "0.0.0.0", () => {
 			setSocketStatus(
-				`🚀\tSocket ready at http://${networkAddress}:${webSocketPort} `,
+				`🚀\tSocket ready at ws://${networkAddress}:${webSocketPort} `,
 				"green"
 			);
 		});

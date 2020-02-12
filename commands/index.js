@@ -175,7 +175,7 @@ const Main = ({ path: watchPath }) => {
 				}
 
 				setSocketStatus(
-					`🚀\tSocket ready at http://${networkAddress}:${webSocketPort} `,
+					`🚀\tSocket ready at ws://${networkAddress}:${webSocketPort} `,
 					"green"
 				);
 			});
