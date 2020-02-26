@@ -187,7 +187,9 @@ const Main = ({ path: watchPath }) => {
 Main.propTypes = {
 	/// Relative path to the watching directory
 	path: PropTypes.string,
+	/// Websocket port
 	webSocketPort: PropTypes.string,
+	/// Static file port
 	staticPort: PropTypes.string
 };
 
