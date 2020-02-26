@@ -12,7 +12,10 @@ import handler from "serve-handler";
 import fs from "fs-extra";
 import path from "path";
 import { useLogState, getNetworkAddress } from "../core/utils";
-import { webSocketPort, staticPort } from "../core/config";
+import {
+	webSocketPort as initWebSocketPort,
+	staticPort as initStaticPort
+} from "../core/config";
 
 import uuid from "uuid/v1";
 
@@ -31,7 +34,7 @@ const watchMap = new Map();
 // });
 
 /// 🚀 Instant file watcher socket daemon.
-const Main = ({ path: watchPath }) => {
+const Main = ({ path: watchPath, webSocketPort, staticPort }) => {
 	const [restStatus, restStatusColor, setRestStatus] = useLogState(
 		"rest",
 		"🔄\tSpinning up file server . . .",
@@ -206,15 +209,21 @@ const Main = ({ path: watchPath }) => {
 
 Main.propTypes = {
 	/// Relative path to the watching directory
-	path: PropTypes.string
+	path: PropTypes.string,
+	webSocketPort: PropTypes.string,
+	staticPort: PropTypes.string
 };
 
 Main.defaultProps = {
-	path: "."
+	path: ".",
+	webSocketPort: initWebSocketPort,
+	staticPort: initStaticPort
 };
 
 Main.shortFlags = {
-	path: "p"
+	path: "p",
+	webSocketPort: "wp",
+	staticPort: "sp"
 };
 
 export default Main;
