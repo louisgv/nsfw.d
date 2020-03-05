@@ -211,9 +211,9 @@ Main.propTypes = {
 	/// Relative path to the watching directory
 	path: PropTypes.string,
 	/// Websocket port
-	webSocketPort: PropTypes.string,
+	webSocketPort: PropTypes.number,
 	/// Static file port
-	staticPort: PropTypes.string
+	staticPort: PropTypes.number
 };
 
 Main.defaultProps = {

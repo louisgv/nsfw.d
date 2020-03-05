@@ -36,7 +36,7 @@ const watchMap = new Map();
 // });
 
 /// 🚀 Instant file watcher socket daemon for armhf.
-const Main = ({ path: watchPath }) => {
+const Main = ({ path: watchPath, webSocketPort, staticPort }) => {
 	const [restStatus, restStatusColor, setRestStatus] = useLogState(
 		"rest",
 		"🔄\tSpinning up file server . . .",
@@ -138,7 +138,7 @@ const Main = ({ path: watchPath }) => {
 							break;
 					}
 				} catch (error) {
-					setWatcherStatus(`E\t${error.message}`, 'red')
+					setWatcherStatus(`E\t${error.message}`, "red");
 				}
 			});
 		});
@@ -188,9 +188,9 @@ Main.propTypes = {
 	/// Relative path to the watching directory
 	path: PropTypes.string,
 	/// Websocket port
-	webSocketPort: PropTypes.string,
+	webSocketPort: PropTypes.number,
 	/// Static file port
-	staticPort: PropTypes.string
+	staticPort: PropTypes.number
 };
 
 Main.defaultProps = {
