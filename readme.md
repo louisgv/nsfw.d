@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-$ npm install nsfw.d
+$ npm install -g nsfw.d
 ```
 
 
@@ -12,7 +12,7 @@ $ npm install nsfw.d
 ```bash
 $ nsfw.d <path>
 
-🚀 Instance file watcher socket daemon.
+🚀 File watcher socket daemon.
 
 Positionals:
   path  Relative path to the watching directory                         [string]
@@ -20,6 +20,8 @@ Positionals:
 Options:
   --help     Show help                                                 [boolean]
   --version  Show version number                                       [boolean]
+  -sp        Static file port                                          [string]
+  -wp        WebSocket port                                            [string]
 ```
 
 
